@@ -16,6 +16,7 @@ import {
   Text,
   useColorScheme,
   View,
+  FlatList
 } from 'react-native';
 
 import {
@@ -62,30 +63,41 @@ const App: () => Node = () => {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          <Text style={{
+              fontWeight: 'bold',
+              textAlign: 'center',
+              fontSize: 24,
+              margin: 20,
+          }}>
+            JustAReactNativeApp
+          </Text>
+          <Text style={{ margin: 10, fontSize: 16 }}>
+            This is a React Native application built for Android. This second sentence shows what happens when the text overlaps.
+          </Text>
+          <Text style={{
+            marginLeft: 10,
+            marginTop: 10,
+            marginBottom: 15,
+            fontSize: 18
+          }}>
+            Here is a list of my classes this quarter:
+          </Text>
         </View>
-      </ScrollView>
+      <FlatList
+      data={[
+        { key: 'AD315', title: 'Discrete Math for Computer Programming' },
+        { key: 'AD340', title: 'Mobile Application Development' },
+        { key: 'AD410', title: 'Web Application Practicum' }
+      ]}
+      renderItem={({item}) =>
+        <Text style={{ margin: 5, marginLeft: 20 }}>
+          {item.key}: {item.title}
+        </Text>}
+    />
     </SafeAreaView>
   );
 };
