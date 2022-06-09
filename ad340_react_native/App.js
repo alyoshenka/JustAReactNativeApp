@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -16,7 +16,8 @@ import {
   Text,
   useColorScheme,
   View,
-  FlatList
+  FlatList,
+  Button,
 } from 'react-native';
 
 import {
@@ -26,6 +27,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -60,8 +64,10 @@ const App: () => Node = () => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const Stack = createNativeStackNavigator();
+
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView style={backgroundStyle} style={{flex: 1}}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <View
           style={{
@@ -75,30 +81,16 @@ const App: () => Node = () => {
           }}>
             JustAReactNativeApp
           </Text>
-          <Text style={{ margin: 10, fontSize: 16 }}>
-            This is a React Native application built for Android. This second sentence shows what happens when the text overlaps.
-          </Text>
-          <Text style={{
-            marginLeft: 10,
-            marginTop: 10,
-            marginBottom: 15,
-            fontSize: 18
-          }}>
-            Here is a list of my classes this quarter:
-          </Text>
-        </View>
-      <FlatList
-      data={[
-        { key: 'AD315', title: 'Discrete Math for Computer Programming' },
-        { key: 'AD340', title: 'Mobile Application Development' },
-        { key: 'AD410', title: 'Web Application Practicum' }
-      ]}
-      renderItem={({item}) =>
-        <Text style={{ margin: 5, marginLeft: 20 }}>
-          {item.key}: {item.title}
-        </Text>}
-    />
+    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="People" component={People} />
+        <Stack.Screen name="Person" component={Person} />
+      </Stack.Navigator>
+    </NavigationContainer>
     </SafeAreaView>
+
   );
 };
 
@@ -120,5 +112,83 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
+const People = ({navigation}) => {
+    const [people, setPeople] = useState([]);
+
+    const getPeople = () => {
+        fetch('https://fakerapi.it/api/v1/users?_quantity=10')
+            .then((response) => response.json())
+            .then((json) => {
+                setPeople(json.data);
+              }
+            ).catch((error) => { console.log(error); });
+    }
+
+    useEffect(() => {
+        getPeople();
+    }, [])
+
+    return (
+    <View>
+    {!people.isEmpty ?
+        <FlatList
+          data={people}
+          renderItem={({ item }) => (
+              <Button
+                title={`${item.firstname} ${item.lastname}`}
+                onPress={() => navigation.navigate('Person', { person: item })}
+              />
+          )} />
+
+        : <Text>No people data</Text>}
+    </View>
+   );
+};
+
+const Home = ({navigation}) => {
+    return (
+    <View>
+        <Text style={{ margin: 10, fontSize: 16 }}>
+           This is a React Native application built for Android. This second sentence shows what happens when the text overlaps.
+        </Text>
+        <Text style={{
+           marginLeft: 10,
+           marginTop: 10,
+           marginBottom: 15,
+           fontSize: 18
+         }}>
+           Here is a list of my classes this quarter:
+         </Text>
+         <FlatList
+         data={[
+           { key: 'AD315', title: 'Discrete Math for Computer Programming' },
+           { key: 'AD340', title: 'Mobile Application Development' },
+           { key: 'AD410', title: 'Web Application Practicum' }
+         ]}
+         renderItem={({item}) =>
+           <Text style={{ margin: 5, marginLeft: 20 }}>
+             {item.key}: {item.title}
+           </Text>}
+       />
+       <Button
+           title="Go to People"
+           onPress={() => navigation.navigate('People')}
+       />
+   </View>
+   );
+}
+
+const Person = ({navigation, route}) => {
+    const {
+        firstname,
+        lastname,
+        username,
+        email,
+        website,
+        image
+    } = route.params.person;
+    return <Text>{firstname} {lastname}</Text>
+}
 
 export default App;
