@@ -18,6 +18,7 @@ import {
   View,
   FlatList,
   Button,
+  Image
 } from 'react-native';
 
 import {
@@ -181,6 +182,7 @@ const Home = ({navigation}) => {
 
 const Person = ({navigation, route}) => {
     const {
+        id,
         firstname,
         lastname,
         username,
@@ -188,7 +190,17 @@ const Person = ({navigation, route}) => {
         website,
         image
     } = route.params.person;
-    return <Text>{firstname} {lastname}</Text>
+
+    return (
+        <View style={{margin:10, alignItems: 'center' }}>
+            <Text style={{marginBottom: 10, fontSize: 30}}>{firstname} {lastname}</Text>
+            <Text style={{marginBottom: 10, fontSize: 20}}>{username}</Text>
+            <Text style={{marginBottom: 10, fontSize: 20}}>{email}</Text>
+            <Text style={{marginBottom: 10, fontSize: 20}}>{website}</Text>
+            <Image
+                source={{uri: `${image}${id}`}}
+                style={{ width: '50%', height: '50%', marginTop: 30}}/>
+        </View>);
 }
 
 export default App;
